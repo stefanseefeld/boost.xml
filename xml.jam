@@ -1,0 +1,13 @@
+import os ;
+import project ;
+
+
+# Make this module a project
+project.initialize $(__name__) ;
+project xml ;
+
+if [ MATCH (--debug-configuration) : [ modules.peek : ARGV ] ]
+{
+  .debug-configuration = true ;
+}
+
