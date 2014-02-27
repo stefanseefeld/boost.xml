@@ -166,8 +166,8 @@ inline node_ptr<element<S> >
 element<S>::insert_element(child_iterator i, S const &name)
 {
   xmlNode *node = xmlNewNode(0, converter<S>::in(name));
-  if (impl(i))
-    node = xmlAddPrevSibling(impl(i), node);
+  if (this->impl(i))
+    node = xmlAddPrevSibling(this->impl(i), node);
   else
     node = xmlAddChild(this->impl(), node);
   return element<S>(node);
@@ -186,8 +186,8 @@ inline node_ptr<text<S> >
 element<S>::insert_text(child_iterator i, S const &name)
 {
   xmlNode *node = xmlNewText(converter<S>::in(name));
-  if (impl(i))
-    node = xmlAddPrevSibling(impl(i), node);
+  if (this->impl(i))
+    node = xmlAddPrevSibling(this->impl(i), node);
   else
     node = xmlAddChild(this->impl(), node);
   return text<S>(node);
@@ -207,8 +207,8 @@ inline node_ptr<comment<S> >
 element<S>::insert_comment(child_iterator i, S const &content)
 {
   xmlNode *node = xmlNewComment(converter<S>::in(content));
-  if (impl(i))
-    node = xmlAddPrevSibling(impl(i), node);
+  if (this->impl(i))
+    node = xmlAddPrevSibling(this->impl(i), node);
   else
     node = xmlAddChild(this->impl(), node);
   return comment<S>(node);
@@ -230,8 +230,8 @@ element<S>::insert_pi(child_iterator i,
 		      S const &content)
 {
   xmlNode *node = xmlNewPI(converter<S>::in(name), converter<S>::in(content));
-  if (impl(i))
-    node = xmlAddPrevSibling(impl(i), node);
+  if (this->impl(i))
+    node = xmlAddPrevSibling(this->impl(i), node);
   else
     node = xmlAddChild(this->impl(), node);
   return pi<S>(node);
@@ -256,8 +256,8 @@ element<S>::insert_cdata(child_iterator i, S const &content)
   xmlChar *data = converter<S>::in(content);
   size_t length = xmlStrlen(data);
   xmlNode *node = xmlNewCDataBlock(doc, data, length);
-  if (impl(i))
-    node = xmlAddPrevSibling(impl(i), node);
+  if (this->impl(i))
+    node = xmlAddPrevSibling(this->impl(i), node);
   else
     node = xmlAddChild(this->impl(), node);
   return cdata<S>(node);
@@ -267,11 +267,11 @@ template <typename S>
 inline node_ptr<node<S> > element<S>::insert(child_iterator i,
 					     node_ptr<node<S> > child)
 {
-  xmlUnlinkNode(impl(*child));
-  if (impl(i))
-    return node<S>(xmlAddPrevSibling(impl(i), impl(*child)));
+  xmlUnlinkNode(this->impl(*child));
+  if (this->impl(i))
+    return node<S>(xmlAddPrevSibling(this->impl(i), this->impl(*child)));
   else
-    return node<S>(xmlAddChild(this->impl(), impl(*child)));
+    return node<S>(xmlAddChild(this->impl(), this->impl(*child)));
 }
 
 template <typename S>
@@ -279,8 +279,8 @@ inline void element<S>::remove(typename element<S>::child_iterator i)
 {
   if (i != end_children())
   {
-    xmlUnlinkNode(impl(i));
-    xmlFreeNode(impl(i));
+    xmlUnlinkNode(this->impl(i));
+    xmlFreeNode(this->impl(i));
   }
 }
 
@@ -323,7 +323,7 @@ template <typename S>
 typename element<S>::const_child_iterator 
 element<S>::find(node_ptr<node<S> const> n) const
 {
-  xmlNode *child = impl(*n);
+  xmlNode *child = this->impl(*n);
   for (const_child_iterator i = begin_children(); i != end_children(); ++i)
     if (**i == n) return i;
   return end_children();
@@ -333,7 +333,7 @@ template <typename S>
 typename element<S>::child_iterator 
 element<S>::find(node_ptr<node<S> const> n)
 {
-  //  xmlNode *child = impl(*n);
+  //  xmlNode *child = this->impl(*n);
   for (child_iterator i = begin_children(); i != end_children(); ++i)
     if (**i == *n) return i;
   return end_children();
