@@ -2,7 +2,7 @@
 #define boost_xml_dom_node_hpp_
 
 #include <boost/xml/dom/nodefwd.hpp>
-#include <boost/xml/dom/detail.hpp>
+#include <boost/xml/dom/iterator.hpp>
 #include <stdexcept>
 
 namespace boost
@@ -12,11 +12,15 @@ namespace xml
 namespace dom
 {
 
-class invalid_cast : public std::invalid_argument
+enum node_type
 {
-public:
-  invalid_cast(std::string const &msg) 
-    : std::invalid_argument("invalid cast from " + msg) {}
+  INTERNAL = 0,
+  ELEMENT,
+  ATTRIBUTE,
+  TEXT,
+  CDATA,
+  PI,
+  COMMENT,
 };
 
 template <typename N>
@@ -37,10 +41,13 @@ private:
   N impl_;
 };
 
+template <typename T, typename N>
+inline T cast(node_ptr<N> n);
+
 template <typename S>
 class node : public detail::wrapper<xmlNode*>
 {
-  template <typename N> friend class detail::node_iterator;
+  template <typename N> friend class iterator;
   friend class node_ptr<node<S> >;
   friend class node_ptr<node<S> const>;
   friend class element<S>;
@@ -52,7 +59,7 @@ class node : public detail::wrapper<xmlNode*>
 public:
   bool operator== (node<S> const &n) { return impl() == impl(n);}
 
-  node_type type() const { return detail::node_type_table[this->impl()->type];}
+  node_type type() const { return types[this->impl()->type];}
   //. Return the node's name.
   S name() const { return converter<S>::out(this->impl()->name);}
   //. Return the node's path within its document.
@@ -76,6 +83,9 @@ protected:
     detail::wrapper<xmlNode*>::operator=(n);
     return *this;
   }
+private:
+  static node_type const types[22];
+  static char const *names[7];
 };
 
 template <typename S>
@@ -105,17 +115,44 @@ inline S node<S>::lang() const
   return retn;
 }
 
-template <typename T, typename N> 
-inline T cast(node_ptr<N> n)
+template <typename S>
+node_type const node<S>::types[22] =
 {
-  if (n->impl() && 
-      detail::node_type_table[n->impl()->type] != detail::target<T>::type)
-  {
-    node_type type = detail::node_type_table[n->impl()->type];
-    throw invalid_cast(detail::node_type_names[type]);
-  }
-  return detail::ptr_factory<typename detail::pointee<T>::type>(n->impl());
-}
+  INTERNAL,
+  ELEMENT,   //XML_ELEMENT_NODE
+  ATTRIBUTE, //XML_ATTRIBUTE_NODE
+  TEXT,      //XML_TEXT_NODE
+  CDATA,     //XML_CDATA_SECTION_NODE
+  INTERNAL,  //XML_ENTITY_REF_NODE
+  INTERNAL,  //XML_ENTITY_NODE
+  PI,        //XML_PI_NODE
+  COMMENT,   //XML_COMMENT_NODE
+  INTERNAL,  //XML_DOCUMENT_NODE
+  INTERNAL,  //XML_DOCUMENT_TYPE_NODE
+  INTERNAL,  //XML_DOCUMENT_FRAG_NODE
+  INTERNAL,  //XML_NOTATION_NODE
+  INTERNAL,  //XML_HTML_DOCUMENT_NODE
+  INTERNAL,  //XML_DTD_NODE
+  INTERNAL,  //XML_ELEMENT_DECL
+  INTERNAL,  //XML_ATTRIBUTE_DECL
+  INTERNAL,  //XML_ENTITY_DECL
+  INTERNAL,  //XML_NAMESPACE_DECL
+  INTERNAL,  //XML_XINCLUDE_START
+  INTERNAL,  //XML_XINCLUDE_END
+  INTERNAL,  //XML_DOCB_DOCUMENT_NODE
+};
+
+template <typename S>
+char const *node<S>::names[7] =
+{
+  "internal node",
+  "element",
+  "attribute",
+  "text node",
+  "cdata block",
+  "processing instruction",
+  "comment"
+};
 
 } // namespace boost::xml::dom
 } // namespace boost::xml

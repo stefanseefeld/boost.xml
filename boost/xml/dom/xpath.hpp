@@ -4,7 +4,6 @@
 #include <libxml/xpath.h>
 #include <boost/xml/dom/document.hpp>
 #include <boost/xml/dom/node_set.hpp>
-#include <boost/xml/dom/detail.hpp>
 
 namespace boost
 {

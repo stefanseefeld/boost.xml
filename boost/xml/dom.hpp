@@ -3,3 +3,4 @@
 #include <boost/xml/dom/xpath.hpp>
 #include <boost/xml/dom/xinclude.hpp>
 #include <boost/xml/dom/validate_dtd.hpp>
+#include <boost/xml/dom/cast.hpp>

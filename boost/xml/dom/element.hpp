@@ -21,11 +21,11 @@ class element : public node<S>
   friend class document<S>;
   friend node_ptr<element<S> > detail::ptr_factory<element<S> >(xmlNode *);
 public:
-  typedef detail::node_iterator<node<S> > child_iterator;
-  typedef detail::node_iterator<node<S> const> const_child_iterator;
+  typedef iterator<node<S> > child_iterator;
+  typedef iterator<node<S> const> const_child_iterator;
 
-  typedef detail::node_iterator<dom::attribute<S> > attribute_iterator;
-  typedef detail::node_iterator<dom::attribute<S> const> const_attribute_iterator;
+  typedef iterator<dom::attribute<S> > attribute_iterator;
+  typedef iterator<dom::attribute<S> const> const_attribute_iterator;
 
   //. Return the attribute for the given name, if it exists.
   node_ptr<dom::attribute<S> const> attribute(S const &name) const;

@@ -36,15 +36,12 @@ public:
   validation_error(std::string const &msg) : std::runtime_error(msg) {}
 };
 
-namespace detail { extern "C" void xml_error_callback(void *, xmlError *);}
-
 //. A parser encapsulates parse-related parameters, such as non-fatal
 //. errors encountered during the parse process. Other parameters might
 //. be added, such as for catalog handling (See XML Catalog), or some
 //. other form of caching, if possible.
 class parser
 {
-  friend void detail::xml_error_callback(void *, xmlError *);
 public:
   parser();
   ~parser();
@@ -52,6 +49,11 @@ public:
   std::auto_ptr<document<S> > parse_file(std::string const &filename,
 					 bool validate);
 private:
+  static void error_callback(void *closure, xmlError *error)
+  {
+    parser *p = reinterpret_cast<parser *>(closure);
+    p->error_callback(*error);
+  }
   void error_callback(xmlError const &);
 
   std::string error_msg_;
@@ -59,7 +61,7 @@ private:
 
 inline parser::parser()
 {
-  xmlSetStructuredErrorFunc(this, detail::xml_error_callback);
+  xmlSetStructuredErrorFunc(this, error_callback);
 }
 
 inline parser::~parser()
