@@ -19,7 +19,7 @@ int main(int argc, char **argv)
   try
   {
     // create a document from a file
-    document_ptr document = dom::parse_file<std::string>(argv[1], false);
+    document_ptr document = dom::parse_file<S>(argv[1], false);
     element_ptr root = document->root();
     {
       xpath path("//xi:include");

@@ -13,7 +13,7 @@ int main(int argc, char **argv)
 {
   try
   {
-    document_ptr document(new dom::document<std::string>());
+    document_ptr document(new dom::document<S>());
     element_ptr root = document->create_root("config");
     dtd_ptr doc_type = document->create_internal_subset("foo", "bar", "baz");
     std::ofstream ofs("config.xml");

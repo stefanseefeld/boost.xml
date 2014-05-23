@@ -5,6 +5,9 @@ namespace boost
 {
 namespace xml
 {
+
+template <typename S> struct converter;
+
 namespace dom
 {
 
@@ -19,7 +22,6 @@ template <typename S> class cdata;
 template <typename S> class document;
 template <typename S> class node_set;
 template <typename S> class xpath;
-template <typename S> struct converter;
 
 } // namespace boost::xml::dom
 } // namespace boost::xml

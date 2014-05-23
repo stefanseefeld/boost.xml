@@ -19,11 +19,11 @@ int main(int argc, char **argv)
   try
   {
     // create a document from a file
-    document_ptr document = dom::parse_file<std::string>(argv[1], true);
+    document_ptr document = dom::parse_file<S>(argv[1], true);
     const_element_ptr root = document->root();
-    std::vector<std::string> children = dom::valid_elements(root, root->begin_children());
+    std::vector<S> children = dom::valid_elements(root, root->begin_children());
     std::cout << "root may have these children:" << std::endl;
-    for (std::vector<std::string>::iterator i = children.begin();
+    for (std::vector<S>::iterator i = children.begin();
 	 i != children.end();
 	 ++i)
       std::cout << ' ' << *i << std::endl;
