@@ -5,6 +5,7 @@
 
 #include <boost/xml/reader.hpp>
 #include <boost/xml/unicode/std_string.hpp>
+#include <iostream>
 
 using namespace boost::xml::reader;
 
