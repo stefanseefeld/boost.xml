@@ -1,18 +1,36 @@
-# comment out one of the folling sets of flags,
+# comment out one of the following sets of flags,
 # depending on what string type and backend you want to use:
 
-### std::string and libxml2
-CPPFLAGS := -I../../../ -I/usr/include/libxml2 -DUSE_STD_STRING
-LIBS := -lxml2
-### Qt string and libxml2
-#CPPFLAGS := -I../../../ -I/usr/include/libxml2 -DUSE_QSTRING
-#LIBS := -lxml2 -lQtCore
-### glibmm string and libxml2
-CPPFLAGS := -I../../../ -I/usr/include/libxml2
+LIBXML2_CPPFLAGS := -I/usr/include/libxml2 -DUSE_LIBXML2
+LIBXML2_LIBS := -lxml2
+
+XERCES_CPPFLAGS := -DUSE_XERCES
+XERCES_LIBS := -lxerces-c
+
+backend ?= libxml2
+unicode ?= std
+
+ifeq ($(backend), xerces)
+CPPFLAGS := -I../../../ $(XERCES_CPPFLAGS)
+LIBS := $(XERCES_LIBS)
+else
+CPPFLAGS := -I../../../ $(LIBXML2_CPPFLAGS)
+LIBS := $(LIBXML2_LIBS)
+endif
+
+ifeq ($(unicode), std)
+### std::string
+CPPFLAGS += -DUSE_STD_STRING
+LIBS +=
+else ifeq ($(unicode), qt)
+### Qt string
+CPPFLAGS += -DUSE_QSTRING
+LIBS += -lQtCore
+else ifeq ($(unicode), glib)
+### glibmm string
 CPPFLAGS += $(shell pkg-config --cflags glibmm-2.4)  -DUSE_GSTRING
-LIBS := -lxml2 -lglibmm-2.4
-
-
+LIBS += -lglibmm-2.4
+endif
 
 targets := reader dom traverse xinclude validate_dtd config
 

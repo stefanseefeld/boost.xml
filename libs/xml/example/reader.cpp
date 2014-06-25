@@ -3,6 +3,7 @@
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
+#include <boost/xml/library.hpp>
 #include <boost/xml/reader.hpp>
 #include <boost/xml/unicode/std_string.hpp>
 #include <iostream>
@@ -13,12 +14,16 @@ int main(int, char **)
 {
   try
   {
+    boost::xml::library library;
     parser<std::string> parser("article.xml");
     while (parser.next())
     {
-      token_base<std::string> const &current = parser.get_token();
-      std::cout << current.depth() << ' ' << current.name() << ' ' << current.value() << ' '
-                << '(' << current.type() << ')' << std::endl;
+      token<std::string> const &current = parser.token();
+      std::cout << current.depth() << ' '
+		<< current.name() << " (" << current.type() << ')';
+      if (current.has_value())
+	std::cout << "  \"" << current.value() << '"';
+      std::cout << std::endl;
     }
   }
   catch (std::exception &e)

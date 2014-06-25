@@ -1,7 +1,9 @@
-#ifndef boost_xml_backends_libxml2_reader_parser_hpp_
-#define boost_xml_backends_libxml2_reader_parser_hpp_
+#ifndef boost_xml_backends_libxml2_reader_hpp_
+#define boost_xml_backends_libxml2_reader_hpp_
 
 #include <boost/xml/converter.hpp>
+#include <libxml/xmlversion.h>
+#undef LIBXML_LEGACY_ENABLED
 #include <libxml/xmlreader.h>
 #include <string>
 #include <stdexcept>
@@ -39,7 +41,7 @@ enum token_type
 template <typename S> class parser;
 
 template <typename S>
-class token_base
+class token
 {
   friend class parser<S>;
 public:
@@ -48,9 +50,12 @@ public:
   S value() const { return converter<S>::out(xmlTextReaderConstValue(reader_));}
   bool is_empty_element() const { return xmlTextReaderIsEmptyElement(reader_);}
   bool has_value() const { return xmlTextReaderHasValue(reader_);}
+  bool has_attributes() const { return xmlTextReaderHasAttributes(reader_);}
+  int attributes() const { return xmlTextReaderAttributeCount(reader_);}
+  
   token_type type() const { return (token_type)xmlTextReaderNodeType(reader_);}
 protected:
-  token_base(xmlTextReader *reader) : reader_(reader) {}
+  token(xmlTextReader *reader) : reader_(reader) {}
 
   xmlTextReader *reader_;
 };
@@ -67,10 +72,10 @@ public:
   }
   ~parser() { xmlFreeTextReader(impl_);}
   bool next() { status_ = xmlTextReaderRead(impl_); return status_ == 1;}
-  token_base<S> get_token()
+  reader::token<S> token()
   {
-    token_base<S> token(impl_);
-    return token;
+    reader::token<S> t(impl_);
+    return t;
   }
 private:
   xmlTextReader *impl_;
