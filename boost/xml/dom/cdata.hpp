@@ -1,28 +1,10 @@
 #ifndef boost_xml_dom_cdata_hpp_
 #define boost_xml_dom_cdata_hpp_
 
-#include <boost/xml/dom/node.hpp>
-
-namespace boost
-{
-namespace xml
-{
-namespace dom
-{
-
-template <typename S> class element;
-
-template <typename S>
-class cdata : public text<S> 
-{
-  friend class element<S>;
-public:
-// private:
-  cdata(xmlNode *a) : text<S>(a) {}
-};
-
-} // namespace boost::xml::dom
-} // namespace boost::xml
-} // namespace boost
+#if USE_LIBXML2
+#include <boost/xml/backends/libxml2/dom/cdata.hpp>
+#elif USE_XERCES
+#include <boost/xml/backends/xerces/dom/cdata.hpp>
+#endif
 
 #endif

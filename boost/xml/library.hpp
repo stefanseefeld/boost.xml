@@ -1,4 +1,4 @@
-#ifndef boost_xml_libray_hpp_
+#ifndef boost_xml_library_hpp_
 #define boost_xml_library_hpp_
 
 #ifdef USE_XERCES
