@@ -86,6 +86,13 @@ public:
 					 bool validate)
   {
     error_handler<S> eh;
+    if (validate)
+      parser_.setValidationScheme(detail::XercesDOMParser::Val_Always);
+    else
+    {
+      parser_.setLoadExternalDTD(false);
+      parser_.setValidationScheme(detail::XercesDOMParser::Val_Never);
+    }
     parser_.setErrorHandler(&eh);
     parser_.parse(filename.c_str());
     parser_.setErrorHandler(0);
