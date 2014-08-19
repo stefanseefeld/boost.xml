@@ -2,6 +2,9 @@
 #define boost_xml_backends_xerces_dom_parser_hpp_
 
 #include <boost/xml/backends/xerces/dom/document.hpp>
+#include <xercesc/sax/ErrorHandler.hpp>
+#include <xercesc/util/XercesDefs.hpp>
+#include <xercesc/sax/SAXParseException.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <string>
 #include <stdexcept>
@@ -47,6 +50,34 @@ XERCES_CPP_NAMESPACE_USE
 //. other form of caching, if possible.
 class parser
 {
+  template <typename S>
+  class error_handler : public detail::ErrorHandler
+  {
+  public:
+    error_handler() {}
+    std::string error_log() const { return errors_.str();}
+
+    void warning(detail::SAXParseException const &) {}
+    void error(detail::SAXParseException const &e)
+    {
+      errors_ << "Error at file \"" << converter<S>::out(e.getSystemId())
+	      << "\", line " << e.getLineNumber()
+	      << ", column " << e.getColumnNumber()
+	      << "\n   Message: " << converter<S>::out(e.getMessage()) << std::endl;
+    }
+    void fatalError(detail::SAXParseException const &e)
+    {
+      errors_ << "Fatal error at file \"" << converter<S>::out(e.getSystemId())
+	      << "\", line " << e.getLineNumber()
+	      << ", column " << e.getColumnNumber()
+	      << "\n   Message: " << converter<S>::out(e.getMessage()) << std::endl;
+    }
+    void resetErrors() { errors_.str("");}
+  private:
+    // We accumulate all errors and report them after the parse is complete.
+    std::ostringstream errors_;
+  };
+
 public:
   parser() {}
   ~parser() {}
@@ -54,7 +85,12 @@ public:
   std::auto_ptr<document<S> > parse_file(std::string const &filename,
 					 bool validate)
   {
+    error_handler<S> eh;
+    parser_.setErrorHandler(&eh);
     parser_.parse(filename.c_str());
+    parser_.setErrorHandler(0);
+    if (parser_.getErrorCount() != 0)
+      throw parse_error(eh.error_log());
     return detail::factory<S>(parser_.adoptDocument());
   }
 private:
